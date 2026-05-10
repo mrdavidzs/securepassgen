@@ -1,436 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>very secure password generator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>very secure password generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    background: #0a0a0f;
-    overflow: hidden;
-  }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      background: #0a0a0f;
+      overflow: hidden;
+    }
 
-  #vanta-bg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-  }
+    #vanta-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
 
-  .card {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    max-width: 460px;
-    margin: 2rem;
-    background: rgba(10, 10, 20, 0.55);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
-  }
+    .card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 460px;
+      margin: 2rem;
+      background: rgba(10, 10, 20, 0.55);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+    }
 
-  .card-header {
-    padding: 1.75rem 1.75rem 1.25rem;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+    .card-header {
+      padding: 1.75rem 1.75rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
 
-  .title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.5px;
-  }
+    .title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
 
-  .subtitle {
-    font-size: 12px;
-    color: rgba(255,255,255,0.35);
-    margin-top: 3px;
-    letter-spacing: 0.5px;
-  }
+    .subtitle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.35);
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+    }
 
-  .card-body { padding: 1.5rem 1.75rem; }
+    .card-body {
+      padding: 1.5rem 1.75rem;
+    }
 
-  .pw-display {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    min-height: 68px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 1rem;
-  }
+    .pw-display {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
 
-  .pw-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: #e2e8f0;
-    word-break: break-all;
-    line-height: 1.6;
-    flex: 1;
-  }
+    .pw-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #e2e8f0;
+      word-break: break-all;
+      line-height: 1.6;
+      flex: 1;
+    }
 
-  .strength-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    transition: background 0.4s;
-    background: #444;
-  }
+    .strength-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.4s;
+      background: #444;
+    }
 
-  .strength-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.25rem;
-  }
+    .strength-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
 
-  .strength-bars {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-  }
+    .strength-bars {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
 
-  .s-bar {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.1);
-    transition: background 0.35s;
-  }
+    .s-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: background 0.35s;
+    }
 
-  .strength-lbl {
-    font-size: 11px;
-    color: rgba(255,255,255,0.3);
-    white-space: nowrap;
-    font-family: 'JetBrains Mono', monospace;
-  }
+    .strength-lbl {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-  .ctrl-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 1.1rem;
-  }
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.1rem;
+    }
 
-  .ctrl-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    white-space: nowrap;
-    width: 48px;
-  }
+    .ctrl-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      white-space: nowrap;
+      width: 48px;
+    }
 
-  .ctrl-val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    width: 28px;
-    text-align: right;
-  }
+    .ctrl-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      width: 28px;
+      text-align: right;
+    }
 
-  input[type=range] {
-    flex: 1;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 3px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 2px;
-    outline: none;
-  }
+    input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      outline: none;
+    }
 
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-    border: none;
-  }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+    }
 
-  input[type=range]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-    border: none;
-  }
+    input[type=range]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+    }
 
-  .toggles {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 1.25rem;
-  }
+    .toggles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
 
-  .toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-    user-select: none;
-  }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
 
-  .toggle:hover { background: rgba(255,255,255,0.06); }
-  .toggle.on { border-color: rgba(255,255,255,0.2); }
+    .toggle:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
 
-  .toggle input { display: none; }
+    .toggle.on {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
 
-  .t-box {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.15s, border-color 0.15s;
-  }
+    .toggle input {
+      display: none;
+    }
 
-  .toggle.on .t-box {
-    background: #fff;
-    border-color: #fff;
-  }
+    .t-box {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
 
-  .t-tick {
-    font-size: 9px;
-    color: #0a0a0f;
-    display: none;
-    font-weight: 700;
-  }
+    .toggle.on .t-box {
+      background: #fff;
+      border-color: #fff;
+    }
 
-  .toggle.on .t-tick { display: block; }
+    .t-tick {
+      font-size: 9px;
+      color: #0a0a0f;
+      display: none;
+      font-weight: 700;
+    }
 
-  .t-name {
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
-    transition: color 0.15s;
-  }
+    .toggle.on .t-tick {
+      display: block;
+    }
 
-  .toggle.on .t-name { color: rgba(255,255,255,0.85); }
+    .t-name {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.15s;
+    }
 
-  .btns {
-    display: flex;
-    gap: 8px;
-  }
+    .toggle.on .t-name {
+      color: rgba(255, 255, 255, 0.85);
+    }
 
-  .btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    border: none;
-    letter-spacing: 0.3px;
-  }
+    .btns {
+      display: flex;
+      gap: 8px;
+    }
 
-  .btn:active { transform: scale(0.97); }
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      border: none;
+      letter-spacing: 0.3px;
+    }
 
-  .btn-gen {
-    background: #fff;
-    color: #0a0a0f;
-  }
+    .btn:active {
+      transform: scale(0.97);
+    }
 
-  .btn-gen:hover { opacity: 0.88; }
+    .btn-gen {
+      background: #fff;
+      color: #0a0a0f;
+    }
 
-  .btn-copy {
-    background: rgba(255,255,255,0.08);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.12);
-  }
+    .btn-gen:hover {
+      opacity: 0.88;
+    }
 
-  .btn-copy:hover { background: rgba(255,255,255,0.13); }
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
 
-  .copy-msg {
-    text-align: center;
-    font-size: 11px;
-    color: rgba(100, 220, 160, 0.8);
-    font-family: 'JetBrains Mono', monospace;
-    height: 20px;
-    margin-top: 10px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-</style>
+    .btn-copy:hover {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .copy-msg {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(100, 220, 160, 0.8);
+      font-family: 'JetBrains Mono', monospace;
+      height: 20px;
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="vanta-bg"></div>
+  <div id="vanta-bg"></div>
 
-<div class="card">
-  <div class="card-header">
-    <div class="title">secure password generator</div>
-    <div class="subtitle">secure</div>
-  </div>
-  <div class="card-body">
-    <div class="pw-display">
-      <span class="pw-text" id="pwText">—</span>
-      <span class="strength-dot" id="sDot"></span>
+  <div class="card">
+    <div class="card-header">
+      <div class="title">secure password generator</div>
+      <div class="subtitle">secure</div>
     </div>
-
-    <div class="strength-row">
-      <div class="strength-bars">
-        <div class="s-bar" id="b1"></div>
-        <div class="s-bar" id="b2"></div>
-        <div class="s-bar" id="b3"></div>
-        <div class="s-bar" id="b4"></div>
+    <div class="card-body">
+      <div class="pw-display">
+        <span class="pw-text" id="pwText">—</span>
+        <span class="strength-dot" id="sDot"></span>
       </div>
-      <span class="strength-lbl" id="sLbl">—</span>
-    </div>
 
-    <div class="ctrl-row">
-      <span class="ctrl-label">Length</span>
-      <input type="range" id="lenSlider" min="4" max="64" value="1" step="1">
-      <span class="ctrl-val" id="lenVal">20</span>
-    </div>
+      <div class="strength-row">
+        <div class="strength-bars">
+          <div class="s-bar" id="b1"></div>
+          <div class="s-bar" id="b2"></div>
+          <div class="s-bar" id="b3"></div>
+          <div class="s-bar" id="b4"></div>
+        </div>
+        <span class="strength-lbl" id="sLbl">—</span>
+      </div>
 
-    <div class="toggles">
-      <label class="toggle on" id="lbl-U">
-        <input type="checkbox" id="chk-U" checked>
-        <span class="t-box"><span class="t-tick">✓</span></span>
-        <span class="t-name">Uppercase</span>
-      </label>
-      <label class="toggle on" id="lbl-L">
-        <input type="checkbox" id="chk-L" checked>
-        <span class="t-box"><span class="t-tick">✓</span></span>
-        <span class="t-name">Lowercase</span>
-      </label>
-      <label class="toggle on" id="lbl-N">
-        <input type="checkbox" id="chk-N" checked>
-        <span class="t-box"><span class="t-tick">✓</span></span>
-        <span class="t-name">Numbers</span>
-      </label>
-      <label class="toggle on" id="lbl-S">
-        <input type="checkbox" id="chk-S" checked>
-        <span class="t-box"><span class="t-tick">✓</span></span>
-        <span class="t-name">Symbols</span>
-      </label>
-    </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Length</span>
+        <input type="range" id="lenSlider" min="10" max="200" value="1" step="1">
+        <span class="ctrl-val" id="lenVal">10</span>
+      </div>
 
-    <div class="btns">
-      <button class="btn btn-gen" onclick="generate()">Generate</button>
-      <button class="btn btn-copy" onclick="copyPw()">Copy</button>
+      <div class="toggles">
+        <label class="toggle on" id="lbl-U">
+          <input type="checkbox" id="chk-U" checked>
+          <span class="t-box"><span class="t-tick">✓</span></span>
+          <span class="t-name">Uppercase</span>
+        </label>
+        <label class="toggle on" id="lbl-L">
+          <input type="checkbox" id="chk-L" checked>
+          <span class="t-box"><span class="t-tick">✓</span></span>
+          <span class="t-name">Lowercase</span>
+        </label>
+        <label class="toggle on" id="lbl-N">
+          <input type="checkbox" id="chk-N" checked>
+          <span class="t-box"><span class="t-tick">✓</span></span>
+          <span class="t-name">Numbers</span>
+        </label>
+        <label class="toggle on" id="lbl-S">
+          <input type="checkbox" id="chk-S" checked>
+          <span class="t-box"><span class="t-tick">✓</span></span>
+          <span class="t-name">Symbols</span>
+        </label>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-gen" onclick="generate()">Generate</button>
+        <button class="btn btn-copy" onclick="copyPw()">Copy</button>
+      </div>
+      <div class="copy-msg" id="copyMsg">Copied to clipboard</div>
     </div>
-    <div class="copy-msg" id="copyMsg">Copied to clipboard</div>
   </div>
-</div>
 
-<script>
-const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const LOWER = 'abcdefghijklmnopqrstuvwxyz';
-const NUMS  = '0123456789';
-const SYMS  = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+  <script>
+    const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const LOWER = 'abcdefghijklmnopqrstuvwxyz';
+    const NUMS = '0123456789';
+    const SYMS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-let currentPw = '';
+    let currentPw = '';
 
-function secRand(max) {
-  const a = new Uint32Array(1);
-  crypto.getRandomValues(a);
-  return a[0] % max;
-}
+    function secRand(max) {
+      const a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0] % max;
+    }
 
-function charset() {
-  let c = '';
-  if (document.getElementById('chk-U').checked) c += UPPER;
-  if (document.getElementById('chk-L').checked) c += LOWER;
-  if (document.getElementById('chk-N').checked) c += NUMS;
-  if (document.getElementById('chk-S').checked) c += SYMS;
-  return c;
-}
+    function charset() {
+      let c = '';
+      if (document.getElementById('chk-U').checked) c += UPPER;
+      if (document.getElementById('chk-L').checked) c += LOWER;
+      if (document.getElementById('chk-N').checked) c += NUMS;
+      if (document.getElementById('chk-S').checked) c += SYMS;
+      return c;
+    }
 
-function generate() {
-  const len = parseInt(document.getElementById('lenSlider').value);
-  const cs = charset();
-  if (!cs) { document.getElementById('pwText').textContent = 'Pick at least one type'; return; }
-  let pw = '';
-  for (let i = 0; i < len; i++) pw += cs[secRand(cs.length)];
-  currentPw = pw;
-  document.getElementById('pwText').textContent = pw;
-  updateStrength(len, cs.length);
-}
+    function generate() {
+      const len = parseInt(document.getElementById('lenSlider').value);
+      const cs = charset();
+      if (!cs) { document.getElementById('pwText').textContent = 'Pick at least one type'; return; }
+      let pw = '';
+      for (let i = 0; i < len; i++) pw += cs[secRand(cs.length)];
+      currentPw = pw;
+      document.getElementById('pwText').textContent = pw;
+      updateStrength(len, cs.length);
+    }
 
-function updateStrength(len, csLen) {
-  const entropy = len * Math.log2(csLen);
-  const bars = ['b1','b2','b3','b4'].map(id => document.getElementById(id));
-  const dot = document.getElementById('sDot');
-  const lbl = document.getElementById('sLbl');
-  let lvl = 0, color = '#E24B4A', label = 'Weak';
-  if (entropy >= 40) { lvl = 1; color = '#EF9F27'; label = 'Fair'; }
-  if (entropy >= 60) { lvl = 2; color = '#97C459'; label = 'Strong'; }
-  if (entropy >= 80) { lvl = 3; color = '#5DCAA5'; label = 'Very strong'; }
-  bars.forEach((b, i) => b.style.background = i <= lvl ? color : 'rgba(255,255,255,0.1)');
-  dot.style.background = color;
-  lbl.textContent = label + ' · ' + Math.round(entropy) + ' bits';
-}
+    function updateStrength(len, csLen) {
+      const entropy = len * Math.log2(csLen);
+      const bars = ['b1', 'b2', 'b3', 'b4'].map(id => document.getElementById(id));
+      const dot = document.getElementById('sDot');
+      const lbl = document.getElementById('sLbl');
+      let lvl = 0, color = '#E24B4A', label = 'Weak';
+      if (entropy >= 40) { lvl = 1; color = '#EF9F27'; label = 'Fair'; }
+      if (entropy >= 60) { lvl = 2; color = '#97C459'; label = 'Strong'; }
+      if (entropy >= 80) { lvl = 3; color = '#5DCAA5'; label = 'Very strong'; }
+      bars.forEach((b, i) => b.style.background = i <= lvl ? color : 'rgba(255,255,255,0.1)');
+      dot.style.background = color;
+      lbl.textContent = label + ' · ' + Math.round(entropy) + ' bits';
+    }
 
-function copyPw() {
-  if (!currentPw) return;
-  navigator.clipboard.writeText(currentPw).then(() => {
-    const m = document.getElementById('copyMsg');
-    m.style.opacity = '1';
-    setTimeout(() => m.style.opacity = '0', 2000);
-  });
-}
+    function copyPw() {
+      if (!currentPw) return;
+      navigator.clipboard.writeText(currentPw).then(() => {
+        const m = document.getElementById('copyMsg');
+        m.style.opacity = '1';
+        setTimeout(() => m.style.opacity = '0', 2000);
+      });
+    }
 
-document.getElementById('lenSlider').addEventListener('input', function() {
-  document.getElementById('lenVal').textContent = this.value;
-  generate();
-});
+    document.getElementById('lenSlider').addEventListener('input', function () {
+      document.getElementById('lenVal').textContent = this.value;
+      generate();
+    });
 
-['U','L','N','S'].forEach(id => {
-  const chk = document.getElementById('chk-' + id);
-  const lbl = document.getElementById('lbl-' + id);
-  lbl.addEventListener('click', () => {
-    chk.checked = !chk.checked;
-    lbl.classList.toggle('on', chk.checked);
+    ['U', 'L', 'N', 'S'].forEach(id => {
+      const chk = document.getElementById('chk-' + id);
+      const lbl = document.getElementById('lbl-' + id);
+      lbl.addEventListener('click', () => {
+        chk.checked = !chk.checked;
+        lbl.classList.toggle('on', chk.checked);
+        generate();
+      });
+    });
+
     generate();
-  });
-});
 
-generate();
-
-VANTA.FOG({
-  el: "#vanta-bg",
-  mouseControls: true,
-  touchControls: true,
-  gyroControls: false,
-  minHeight: 200.00,
-  minWidth: 200.00,
-  highlightColor: 0x1a0f3d,
-  midtoneColor: 0x0d0d1a,
-  lowlightColor: 0x050510,
-  baseColor: 0x080815,
-  blurFactor: 0.62,
-  speed: 1.2,
-  zoom: 0.8
-});
-</script>
+    VANTA.FOG({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      highlightColor: 0x1a0f3d,
+      midtoneColor: 0x0d0d1a,
+      lowlightColor: 0x050510,
+      baseColor: 0x080815,
+      blurFactor: 0.62,
+      speed: 1.2,
+      zoom: 0.8
+    });
+  </script>
 </body>
+
 </html>
